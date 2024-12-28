@@ -1,0 +1,136 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model PuzzleGame {
+  gameOfEventId String  @id
+  sizeX         Int
+  sizeY         Int
+  puzzleImage   String
+  allowTrade    Boolean
+
+  Puzzle     Puzzle[]
+  Exchange   Exchange[]
+  UserPuzzle UserPuzzle[]
+}
+
+model Puzzle {
+  id            String @id @default(uuid())
+  gameOfEventId String
+  order         Int
+  rate          Int
+
+  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+
+  Exchange_With_Puzzle Exchange_With_Puzzle[]
+  User_Has_Puzzle      User_Has_Puzzle[]
+  User_Roll_Puzzle     User_Roll_Puzzle[]
+  User_Trade_Puzzle    User_Trade_Puzzle[]
+
+  @@unique([gameOfEventId, order])
+}
+
+model Exchange {
+  id            String @id @default(uuid())
+  gameOfEventId String
+
+  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+
+  Exchange_With_Puzzle Exchange_With_Puzzle[]
+  Exchange_Prize       Exchange_Prize[]
+  User_Do_Exchange     User_Do_Exchange[]
+}
+
+model Exchange_With_Puzzle {
+  puzzleId   String
+  exchangeId String
+  amount     Int
+
+  Puzzle   Puzzle   @relation(fields: [puzzleId], references: [id])
+  Exchange Exchange @relation(fields: [exchangeId], references: [id])
+
+  @@id([puzzleId, exchangeId])
+}
+
+model Exchange_Prize {
+  promotionId String
+  exchangeId  String
+  amount      Int
+
+  Exchange Exchange @relation(fields: [exchangeId], references: [id])
+
+  @@id([promotionId, exchangeId])
+}
+
+// ====================================================
+
+model UserPuzzle {
+  id            String @id @default(uuid())
+  userId        String
+  gameOfEventId String
+
+  PuzzleGame PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+
+  User_Has_Puzzle   User_Has_Puzzle[]
+  User_Roll_Puzzle  User_Roll_Puzzle[]
+  User_Do_Exchange  User_Do_Exchange[]
+  User_Trade_Puzzle User_Trade_Puzzle[]
+
+  @@unique([userId, gameOfEventId])
+}
+
+model User_Has_Puzzle {
+  userPuzzleId String
+  puzzleId     String
+  amount       Int
+
+  UserPuzzle UserPuzzle @relation(fields: [userPuzzleId], references: [id])
+  Puzzle     Puzzle     @relation(fields: [puzzleId], references: [id])
+
+  @@id([userPuzzleId, puzzleId])
+}
+
+model User_Roll_Puzzle {
+  userPuzzleId String
+  puzzleId     String
+  date         DateTime
+
+  UserPuzzle UserPuzzle @relation(fields: [userPuzzleId], references: [id])
+  Puzzle     Puzzle     @relation(fields: [puzzleId], references: [id])
+
+  @@id([userPuzzleId, puzzleId])
+}
+
+model User_Trade_Puzzle {
+  userPuzzleId String
+  puzzleId     String
+  amount       Int
+  date         DateTime
+
+  UserPuzzle UserPuzzle @relation(fields: [userPuzzleId], references: [id])
+  Puzzle     Puzzle     @relation(fields: [puzzleId], references: [id])
+
+  @@id([userPuzzleId, puzzleId])
+}
+
+model User_Do_Exchange {
+  userPuzzleId String
+  exchangeId   String
+  date         DateTime
+
+  UserPuzzle UserPuzzle @relation(fields: [userPuzzleId], references: [id])
+  Exchange   Exchange   @relation(fields: [exchangeId], references: [id])
+
+  @@id([userPuzzleId, exchangeId])
+}
