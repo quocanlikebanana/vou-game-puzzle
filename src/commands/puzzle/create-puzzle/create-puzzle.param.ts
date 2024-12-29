@@ -17,26 +17,6 @@ class PrizesParam {
     amount: number;
 }
 
-class WithPuzzlesParam {
-    @IsNumber()
-    order: number;
-
-    @IsNumber()
-    amount: number;
-}
-
-class ExchangesParam {
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => PrizesParam)
-    prizes: PrizesParam[];
-
-    @IsArray()
-    @ValidateNested({ each: true })
-    @Type(() => WithPuzzlesParam)
-    withPuzzles: WithPuzzlesParam[];
-}
-
 export default class CreatePuzzleParam {
     @IsString()
     gameOfEventId: string;
@@ -60,6 +40,6 @@ export default class CreatePuzzleParam {
 
     @IsArray()
     @ValidateNested({ each: true })
-    @Type(() => ExchangesParam)
-    exchanges: ExchangesParam[];
+    @Type(() => PrizesParam)
+    prizes: PrizesParam[];
 }

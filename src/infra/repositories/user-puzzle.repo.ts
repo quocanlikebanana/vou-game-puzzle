@@ -1,7 +1,7 @@
 import { UserPuzzleAggregate } from "src/domain/user/user-puzzle.agg";
 import { IUserPuzzleRepository } from "src/domain/user/user-puzzle.repo.i";
 import { PrismaRepositoryBase } from "./prisma.repo.base";
-import { UserDoExchangeValueObject } from "src/domain/common/vo/user-do-exchange.vo";
+import { UserExchangePrizeValueObject } from "src/domain/common/vo/user-exchange-prize";
 import { PuzzleAmountValueObject } from "src/domain/common/vo/puzzle-amount.vo";
 import { PuzzleRollValueObject } from "src/domain/common/vo/puzzle-roll.vo";
 import { PuzzleTradeValueObject } from "src/domain/common/vo/puzzle-trade.vo";
@@ -12,7 +12,7 @@ export class UserPuzzleRepository extends PrismaRepositoryBase implements IUserP
         const res = await this.prismaService.userPuzzle.findUnique({
             where: { id: userPuzzleId },
             include: {
-                User_Do_Exchange: true,
+                User_Exchange_Prize: true,
                 User_Has_Puzzle: {
                     include: {
                         Puzzle: true
@@ -37,7 +37,7 @@ export class UserPuzzleRepository extends PrismaRepositoryBase implements IUserP
         const res = await this.prismaService.userPuzzle.findUnique({
             where: { userId_gameOfEventId: { userId, gameOfEventId } },
             include: {
-                User_Do_Exchange: true,
+                User_Exchange_Prize: true,
                 User_Has_Puzzle: {
                     include: {
                         Puzzle: true
@@ -183,11 +183,10 @@ export class UserPuzzleRepository extends PrismaRepositoryBase implements IUserP
         });
     }
 
-    async addDoExchange(aggregate: UserPuzzleAggregate, doExchange: UserDoExchangeValueObject): Promise<void> {
-        await this.prismaService.user_Do_Exchange.create({
+    async addDoExchange(aggregate: UserPuzzleAggregate, doExchange: UserExchangePrizeValueObject): Promise<void> {
+        await this.prismaService.user_Exchange_Prize.create({
             data: {
                 userPuzzleId: aggregate.id,
-                exchangeId: doExchange.props.exchangeId,
                 date: doExchange.props.date
             }
         });
@@ -202,13 +201,55 @@ export class UserPuzzleRepository extends PrismaRepositoryBase implements IUserP
     }
 }
 
-
-
-function mapUserPuzzleDataToAggregate(res: { User_Has_Puzzle: ({ Puzzle: { id: string; gameOfEventId: string; order: number; rate: number; }; } & { userPuzzleId: string; puzzleId: string; amount: number; })[]; User_Roll_Puzzle: ({ Puzzle: { id: string; gameOfEventId: string; order: number; rate: number; }; } & { userPuzzleId: string; date: Date; puzzleId: string; })[]; User_Do_Exchange: { userPuzzleId: string; exchangeId: string; date: Date; }[]; User_Trade_Puzzle: ({ Puzzle: { id: string; gameOfEventId: string; order: number; rate: number; }; } & { userPuzzleId: string; date: Date; puzzleId: string; amount: number; })[]; } & { id: string; userId: string; gameOfEventId: string; }) {
+function mapUserPuzzleDataToAggregate(res: {
+    User_Has_Puzzle: ({
+        Puzzle: {
+            id: string;
+            gameOfEventId: string;
+            order: number;
+            rate: number;
+        };
+    } & {
+        userPuzzleId: string;
+        puzzleId: string;
+        amount: number;
+    })[];
+    User_Roll_Puzzle: ({
+        Puzzle: {
+            id: string;
+            gameOfEventId: string;
+            order: number;
+            rate: number;
+        };
+    } & {
+        userPuzzleId: string;
+        date: Date;
+        puzzleId: string;
+    })[];
+    User_Exchange_Prize: {
+        date: Date;
+    }[];
+    User_Trade_Puzzle: ({
+        Puzzle: {
+            id: string;
+            gameOfEventId: string;
+            order: number;
+            rate: number;
+        };
+    } & {
+        userPuzzleId: string;
+        date: Date;
+        puzzleId: string;
+        amount: number;
+    })[];
+} & {
+    id: string;
+    userId: string;
+    gameOfEventId: string;
+}) {
     const userPuzzleAggregate = new UserPuzzleAggregate({
         ...res,
-        doExchanges: res.User_Do_Exchange.map(e => new UserDoExchangeValueObject({
-            exchangeId: e.exchangeId,
+        doExchanges: res.User_Exchange_Prize.map(e => new UserExchangePrizeValueObject({
             date: e.date,
         })),
         hasPuzzles: res.User_Has_Puzzle.map(p => new PuzzleAmountValueObject({

@@ -19,7 +19,7 @@ export default class RollPuzzleCommand implements ICommand<RollPuzzleParam> {
         if (!userPuzzle) {
             throw new DomainError('User puzzle not found');
         }
-        const order = puzzleGame.getRoll().order;
+        const order = puzzleGame.rollPuzzle().order;
         const puzzleRollValueObject = userPuzzle.doRoll(order);
         const puzzleAmount = new PuzzleAmountValueObject({
             order,

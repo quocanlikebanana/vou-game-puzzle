@@ -2,14 +2,14 @@ import { UserPuzzle } from "@prisma/client";
 import AggregateRoot from "src/common/domain/aggregate.i";
 import { PuzzleAmountValueObject } from "../common/vo/puzzle-amount.vo";
 import { PuzzleRollValueObject } from "../common/vo/puzzle-roll.vo";
-import { UserDoExchangeValueObject } from "../common/vo/user-do-exchange.vo";
+import { UserExchangePrizeValueObject } from "../common/vo/user-exchange-prize";
 import { UserPuzzleCreateDto } from "../common/dto/user-puzzle-create.dto";
 import { DomainError } from "src/common/error/domain.error";
 import { PuzzleTradeValueObject } from "../common/vo/puzzle-trade.vo";
 import { generateUUID } from "src/common/utils/generator";
 
 export interface UserPuzzleProps extends Omit<UserPuzzle, "id"> {
-    doExchanges: UserDoExchangeValueObject[];
+    doExchanges: UserExchangePrizeValueObject[];
     hasPuzzles: PuzzleAmountValueObject[];
     rollPuzzles: PuzzleRollValueObject[];
     tradePuzzles: PuzzleTradeValueObject[];
@@ -52,24 +52,18 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
         return rollPuzzle;
     }
 
-    doExchange(exchangeId: string, withPuzzles: PuzzleAmountValueObject[]): boolean {
-        for (const exchangePuzzle of withPuzzles) {
-            const hasPuzzle = this.props.hasPuzzles.find(p => p.props.order === exchangePuzzle.props.order);
-            if (hasPuzzle == null) {
-                throw new DomainError("Puzzle not found.");
+    doExchange(gameOfEventId: string): void {
+        for (const puzzle of this.props.hasPuzzles) {
+            if (puzzle.props.amount < 1) {
+                throw new DomainError("Not enough puzzle.");
             }
-            if (hasPuzzle.props.amount < exchangePuzzle.props.amount) {
-                return false;
-            }
-            hasPuzzle.props.amount -= exchangePuzzle.props.amount;
+            puzzle.props.amount -= 1;
         }
         const now = new Date();
-        const userDoExchange = new UserDoExchangeValueObject({
-            exchangeId,
+        const userDoExchange = new UserExchangePrizeValueObject({
             date: now,
         });
         this.props.doExchanges.push(userDoExchange);
-        return true;
     }
 
     doGive(puzzleAmount: PuzzleAmountValueObject): {

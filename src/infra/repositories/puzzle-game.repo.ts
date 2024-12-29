@@ -2,7 +2,6 @@ import { PuzzleGameAggregate } from "src/domain/puzzle/puzzle-game.agg";
 import { IPuzzleGameRepository } from "src/domain/puzzle/puzzle-game.repo.i";
 import { PrismaRepositoryBase } from "./prisma.repo.base";
 import { PuzzleRateValueObject } from "src/domain/common/vo/puzzle-rate.vo";
-import { ExchangeEntity } from "src/domain/puzzle/exchange.entity";
 import { PrizeValueObject } from "src/domain/common/vo/prize.vo";
 import { PuzzleAmountValueObject } from "src/domain/common/vo/puzzle-amount.vo";
 
@@ -11,16 +10,7 @@ export class PuzzleGameRepository extends PrismaRepositoryBase implements IPuzzl
         const res = await this.prismaService.puzzleGame.findUnique({
             where: { gameOfEventId },
             include: {
-                Exchange: {
-                    include: {
-                        Exchange_Prize: true,
-                        Exchange_With_Puzzle: {
-                            include: {
-                                Puzzle: true
-                            }
-                        }
-                    },
-                },
+                Prize: true,
                 Puzzle: true
             }
         });
@@ -30,11 +20,10 @@ export class PuzzleGameRepository extends PrismaRepositoryBase implements IPuzzl
                 order: puzzle.order,
                 rate: puzzle.rate
             })),
-            exchanges: res.Exchange.map(exchange => new ExchangeEntity({
-                ...exchange,
-                prizes: exchange.Exchange_Prize.map(prize => new PrizeValueObject({ promotionId: prize.promotionId, amount: prize.amount })),
-                withPuzzles: exchange.Exchange_With_Puzzle.map(exchangePuzzle => new PuzzleAmountValueObject({ order: exchangePuzzle.Puzzle.order, amount: exchangePuzzle.amount }))
-            }, exchange.id))
+            prizes: res.Prize.map(prize => new PrizeValueObject({
+                promotionId: prize.promotionId,
+                amount: prize.amount
+            }))
         });
         return puzzleGameAggregate;
     }
@@ -53,27 +42,10 @@ export class PuzzleGameRepository extends PrismaRepositoryBase implements IPuzzl
                         rate: puzzle.props.rate
                     }))
                 },
-                Exchange: {
-                    create: aggregate.props.exchanges.map(exchange => ({
-                        id: exchange.id,
-                        gameOfEventId: aggregate.props.gameOfEventId,
-                        Exchange_Prize: {
-                            create: exchange.props.prizes.map(prize => ({
-                                promotionId: prize.props.promotionId,
-                                amount: prize.props.amount
-                            }))
-                        },
-                        Exchange_With_Puzzle: {
-                            create: exchange.props.withPuzzles.map(puzzle => ({
-                                Puzzle: {
-                                    connect: {
-                                        gameOfEventId: aggregate.props.gameOfEventId,
-                                        order: puzzle.props.order
-                                    },
-                                },
-                                amount: puzzle.props.amount
-                            }))
-                        }
+                Prize: {
+                    create: aggregate.props.prizes.map(prize => ({
+                        promotionId: prize.props.promotionId,
+                        amount: prize.props.amount
                     }))
                 }
             }

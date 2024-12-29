@@ -4,7 +4,7 @@ CREATE TABLE "PuzzleGame" (
     "sizeX" INTEGER NOT NULL,
     "sizeY" INTEGER NOT NULL,
     "puzzleImage" TEXT NOT NULL,
-    "allowTrate" BOOLEAN NOT NULL,
+    "allowTrade" BOOLEAN NOT NULL,
 
     CONSTRAINT "PuzzleGame_pkey" PRIMARY KEY ("gameOfEventId")
 );
@@ -20,29 +20,13 @@ CREATE TABLE "Puzzle" (
 );
 
 -- CreateTable
-CREATE TABLE "Exchange" (
+CREATE TABLE "Prize" (
     "id" TEXT NOT NULL,
-    "gameOfEventId" TEXT NOT NULL,
-
-    CONSTRAINT "Exchange_pkey" PRIMARY KEY ("id")
-);
-
--- CreateTable
-CREATE TABLE "Exchange_With_Puzzle" (
-    "puzzleId" TEXT NOT NULL,
-    "exchangeId" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
-
-    CONSTRAINT "Exchange_With_Puzzle_pkey" PRIMARY KEY ("puzzleId","exchangeId")
-);
-
--- CreateTable
-CREATE TABLE "Exchange_Prize" (
     "promotionId" TEXT NOT NULL,
-    "exchangeId" TEXT NOT NULL,
+    "gameOfEventId" TEXT NOT NULL,
     "amount" INTEGER NOT NULL,
 
-    CONSTRAINT "Exchange_Prize_pkey" PRIMARY KEY ("promotionId","exchangeId")
+    CONSTRAINT "Prize_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateTable
@@ -67,19 +51,28 @@ CREATE TABLE "User_Has_Puzzle" (
 CREATE TABLE "User_Roll_Puzzle" (
     "userPuzzleId" TEXT NOT NULL,
     "puzzleId" TEXT NOT NULL,
-    "amount" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
 
     CONSTRAINT "User_Roll_Puzzle_pkey" PRIMARY KEY ("userPuzzleId","puzzleId")
 );
 
 -- CreateTable
-CREATE TABLE "User_Do_Exchange" (
+CREATE TABLE "User_Trade_Puzzle" (
     "userPuzzleId" TEXT NOT NULL,
-    "exchangeId" TEXT NOT NULL,
+    "puzzleId" TEXT NOT NULL,
+    "amount" INTEGER NOT NULL,
     "date" TIMESTAMP(3) NOT NULL,
 
-    CONSTRAINT "User_Do_Exchange_pkey" PRIMARY KEY ("userPuzzleId","exchangeId")
+    CONSTRAINT "User_Trade_Puzzle_pkey" PRIMARY KEY ("userPuzzleId","puzzleId")
+);
+
+-- CreateTable
+CREATE TABLE "User_Exchange_Prize" (
+    "id" TEXT NOT NULL,
+    "userPuzzleId" TEXT NOT NULL,
+    "date" TIMESTAMP(3) NOT NULL,
+
+    CONSTRAINT "User_Exchange_Prize_pkey" PRIMARY KEY ("id")
 );
 
 -- CreateIndex
@@ -92,16 +85,7 @@ CREATE UNIQUE INDEX "UserPuzzle_userId_gameOfEventId_key" ON "UserPuzzle"("userI
 ALTER TABLE "Puzzle" ADD CONSTRAINT "Puzzle_gameOfEventId_fkey" FOREIGN KEY ("gameOfEventId") REFERENCES "PuzzleGame"("gameOfEventId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "Exchange" ADD CONSTRAINT "Exchange_gameOfEventId_fkey" FOREIGN KEY ("gameOfEventId") REFERENCES "PuzzleGame"("gameOfEventId") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Exchange_With_Puzzle" ADD CONSTRAINT "Exchange_With_Puzzle_puzzleId_fkey" FOREIGN KEY ("puzzleId") REFERENCES "Puzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Exchange_With_Puzzle" ADD CONSTRAINT "Exchange_With_Puzzle_exchangeId_fkey" FOREIGN KEY ("exchangeId") REFERENCES "Exchange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
-
--- AddForeignKey
-ALTER TABLE "Exchange_Prize" ADD CONSTRAINT "Exchange_Prize_exchangeId_fkey" FOREIGN KEY ("exchangeId") REFERENCES "Exchange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "Prize" ADD CONSTRAINT "Prize_gameOfEventId_fkey" FOREIGN KEY ("gameOfEventId") REFERENCES "PuzzleGame"("gameOfEventId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "UserPuzzle" ADD CONSTRAINT "UserPuzzle_gameOfEventId_fkey" FOREIGN KEY ("gameOfEventId") REFERENCES "PuzzleGame"("gameOfEventId") ON DELETE RESTRICT ON UPDATE CASCADE;
@@ -119,7 +103,10 @@ ALTER TABLE "User_Roll_Puzzle" ADD CONSTRAINT "User_Roll_Puzzle_userPuzzleId_fke
 ALTER TABLE "User_Roll_Puzzle" ADD CONSTRAINT "User_Roll_Puzzle_puzzleId_fkey" FOREIGN KEY ("puzzleId") REFERENCES "Puzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User_Do_Exchange" ADD CONSTRAINT "User_Do_Exchange_userPuzzleId_fkey" FOREIGN KEY ("userPuzzleId") REFERENCES "UserPuzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User_Trade_Puzzle" ADD CONSTRAINT "User_Trade_Puzzle_userPuzzleId_fkey" FOREIGN KEY ("userPuzzleId") REFERENCES "UserPuzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
-ALTER TABLE "User_Do_Exchange" ADD CONSTRAINT "User_Do_Exchange_exchangeId_fkey" FOREIGN KEY ("exchangeId") REFERENCES "Exchange"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+ALTER TABLE "User_Trade_Puzzle" ADD CONSTRAINT "User_Trade_Puzzle_puzzleId_fkey" FOREIGN KEY ("puzzleId") REFERENCES "Puzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;
+
+-- AddForeignKey
+ALTER TABLE "User_Exchange_Prize" ADD CONSTRAINT "User_Exchange_Prize_userPuzzleId_fkey" FOREIGN KEY ("userPuzzleId") REFERENCES "UserPuzzle"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

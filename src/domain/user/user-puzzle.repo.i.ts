@@ -1,7 +1,7 @@
 import { PuzzleAmountValueObject } from "../common/vo/puzzle-amount.vo";
 import { PuzzleRollValueObject } from "../common/vo/puzzle-roll.vo";
 import { PuzzleTradeValueObject } from "../common/vo/puzzle-trade.vo";
-import { UserDoExchangeValueObject } from "../common/vo/user-do-exchange.vo";
+import { UserExchangePrizeValueObject } from "../common/vo/user-exchange-prize";
 import { UserPuzzleAggregate } from "./user-puzzle.agg";
 
 export abstract class IUserPuzzleRepository {
@@ -12,6 +12,6 @@ export abstract class IUserPuzzleRepository {
     abstract updateHasPuzzleAll(aggregate: UserPuzzleAggregate): Promise<void>;
     abstract addRollPuzzle(aggregate: UserPuzzleAggregate, roll: PuzzleRollValueObject): Promise<void>;
     abstract addTradePuzzle(aggregate: UserPuzzleAggregate, trade: PuzzleTradeValueObject): Promise<void>;
-    abstract addDoExchange(aggregate: UserPuzzleAggregate, doExchange: UserDoExchangeValueObject): Promise<void>;
+    abstract addDoExchange(aggregate: UserPuzzleAggregate, doExchange: UserExchangePrizeValueObject): Promise<void>;
     abstract delete(userPuzzleId: string): Promise<void>;
 }

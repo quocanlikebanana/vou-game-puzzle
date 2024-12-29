@@ -5,14 +5,8 @@ export interface PuzzleGameCreateDto extends PuzzleGame {
         order: number;
         rate: number;
     }[];
-    exchanges: {
-        prizes: {
-            promotionId: string;
-            amount: number;
-        }[];
-        withPuzzles: {
-            order: number;
-            amount: number;
-        }[];
+    prizes: {
+        promotionId: string;
+        amount: number;
     }[];
 };
