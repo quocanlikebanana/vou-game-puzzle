@@ -2,7 +2,9 @@ import IReader from "src/common/app/reader.i";
 import PrismaReaderBase from "src/readers/prisma.reader.base";
 import RollHistoryParam from "./roll-history.param";
 import RollHistoryPresenter from "./roll-history.presenter";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class RollHistoryReader extends PrismaReaderBase implements IReader<RollHistoryParam, RollHistoryPresenter[]> {
     async read(param: RollHistoryParam): Promise<RollHistoryPresenter[]> {
         const { userId, gameOfEventId } = param;

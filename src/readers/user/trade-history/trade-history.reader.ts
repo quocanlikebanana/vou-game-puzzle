@@ -2,7 +2,9 @@ import IReader from "src/common/app/reader.i";
 import PrismaReaderBase from "src/readers/prisma.reader.base";
 import TradeHistoryParam from "./trade-history.param";
 import TradeHistoryPresenter from "./trade-history.presenter";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class TradeHistoryReader extends PrismaReaderBase implements IReader<TradeHistoryParam, TradeHistoryPresenter[]> {
     async read(param: TradeHistoryParam): Promise<TradeHistoryPresenter[]> {
         const { userId, gameOfEventId } = param;

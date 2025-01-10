@@ -3,7 +3,9 @@ import ExchangePuzzleParam from "./exchange-puzzle.param";
 import { IUnitOfWork } from "src/domain/common/unit-of-work.i";
 import { DomainError } from "src/common/error/domain.error";
 import { UserExchangePrizeValueObject } from "src/domain/common/vo/user-exchange-prize";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class ExchangePuzzleCommand implements ICommand<ExchangePuzzleParam> {
     constructor(
         private readonly uow: IUnitOfWork
@@ -19,7 +21,7 @@ export default class ExchangePuzzleCommand implements ICommand<ExchangePuzzlePar
         if (!userPuzzle) {
             throw new DomainError('User puzzle not found');
         }
-        userPuzzle.doExchange(gameOfEventId);
+        userPuzzle.doExchange();
         const userDoExchangeValueObject = new UserExchangePrizeValueObject({
             date: new Date()
         });

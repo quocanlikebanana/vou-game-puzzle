@@ -36,13 +36,14 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
     }
 
     doRoll(order: number): PuzzleRollValueObject {
-        const hasPuzzle = this.props.hasPuzzles.find(p => p.props.order === order);
-        if (hasPuzzle == null) {
+        const puzzleIndex = this.props.hasPuzzles.findIndex(p => p.props.order === order);
+        if (puzzleIndex === -1) {
             throw new DomainError("Puzzle not found.");
         }
-        else {
-            hasPuzzle.props.amount += 1;
-        }
+        this.props.hasPuzzles[puzzleIndex] = new PuzzleAmountValueObject({
+            order,
+            amount: this.props.hasPuzzles[puzzleIndex].props.amount + 1
+        });
         const now = new Date();
         const rollPuzzle = new PuzzleRollValueObject({
             order,
@@ -52,12 +53,16 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
         return rollPuzzle;
     }
 
-    doExchange(gameOfEventId: string): void {
-        for (const puzzle of this.props.hasPuzzles) {
+    doExchange(): void {
+        for (let i = 0; i < this.props.hasPuzzles.length; i++) {
+            const puzzle = this.props.hasPuzzles[i];
             if (puzzle.props.amount < 1) {
                 throw new DomainError("Not enough puzzle.");
             }
-            puzzle.props.amount -= 1;
+            this.props.hasPuzzles[i] = new PuzzleAmountValueObject({
+                order: puzzle.props.order,
+                amount: puzzle.props.amount - 1
+            });
         }
         const now = new Date();
         const userDoExchange = new UserExchangePrizeValueObject({
@@ -70,14 +75,17 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
         hasPuzzle: PuzzleAmountValueObject,
         tradePuzzle: PuzzleTradeValueObject
     } {
-        const hasPuzzle = this.props.hasPuzzles.find(p => p.props.order === puzzleAmount.props.order);
-        if (hasPuzzle == null) {
+        const puzzleIndex = this.props.hasPuzzles.findIndex(p => p.props.order === puzzleAmount.props.order);
+        if (puzzleIndex === -1) {
             throw new DomainError("Puzzle not found.");
         }
-        if (hasPuzzle.props.amount < puzzleAmount.props.amount) {
+        if (this.props.hasPuzzles[puzzleIndex].props.amount < puzzleAmount.props.amount) {
             throw new DomainError("Not enough puzzle.");
         }
-        hasPuzzle.props.amount -= puzzleAmount.props.amount;
+        this.props.hasPuzzles[puzzleIndex] = new PuzzleAmountValueObject({
+            order: puzzleAmount.props.order,
+            amount: this.props.hasPuzzles[puzzleIndex].props.amount - puzzleAmount.props.amount
+        });
         const now = new Date();
         const tradePuzzle = new PuzzleTradeValueObject({
             order: puzzleAmount.props.order,
@@ -85,6 +93,7 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
             date: now
         });
         this.props.tradePuzzles.push(tradePuzzle);
+        const hasPuzzle = this.props.hasPuzzles[puzzleIndex];
         return { hasPuzzle, tradePuzzle };
     }
 
@@ -92,11 +101,14 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
         hasPuzzle: PuzzleAmountValueObject,
         tradePuzzle: PuzzleTradeValueObject
     } {
-        const hasPuzzle = this.props.hasPuzzles.find(p => p.props.order === puzzleAmount.props.order);
-        if (hasPuzzle == null) {
+        const puzzleIndex = this.props.hasPuzzles.findIndex(p => p.props.order === puzzleAmount.props.order);
+        if (puzzleIndex === -1) {
             throw new DomainError("Puzzle not found.");
         }
-        hasPuzzle.props.amount += puzzleAmount.props.amount;
+        this.props.hasPuzzles[puzzleIndex] = new PuzzleAmountValueObject({
+            order: puzzleAmount.props.order,
+            amount: this.props.hasPuzzles[puzzleIndex].props.amount + puzzleAmount.props.amount
+        });
         const now = new Date();
         const tradePuzzle = new PuzzleTradeValueObject({
             order: puzzleAmount.props.order,
@@ -104,6 +116,7 @@ export class UserPuzzleAggregate extends AggregateRoot<UserPuzzleProps> {
             date: now
         });
         this.props.tradePuzzles.push(tradePuzzle);
+        const hasPuzzle = this.props.hasPuzzles[puzzleIndex];
         return { hasPuzzle, tradePuzzle };
     }
 }

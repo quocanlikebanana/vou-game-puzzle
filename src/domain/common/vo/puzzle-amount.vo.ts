@@ -6,8 +6,8 @@ export class PuzzleAmountValueObject extends ValueObject<{
     amount: number;
 }> {
     protected validate(props: { order: number; amount: number; }): void {
-        if (props.amount <= 0) {
-            throw new DomainError("Amount must be greater than 0");
+        if (props.amount < 0) {
+            throw new DomainError("Amount must be greater than or equal to 0");
         }
     }
 }

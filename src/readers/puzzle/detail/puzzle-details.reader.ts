@@ -1,10 +1,16 @@
 import IReader from "src/common/app/reader.i";
 import PuzzleDetailParam from "./puzzle-detail.param";
 import PuzzleDetailPresenter from "./puzzle-detail.presenter";
+import { Injectable } from "@nestjs/common";
 import { PrismaService } from "src/infra/prisma.service";
-import PrismaReaderBase from "src/readers/prisma.reader.base";
+import { DomainError } from "src/common/error/domain.error";
 
-export default class PuzzleDetailReader extends PrismaReaderBase implements IReader<PuzzleDetailParam, PuzzleDetailPresenter> {
+@Injectable()
+export default class PuzzleDetailReader implements IReader<PuzzleDetailParam, PuzzleDetailPresenter> {
+    constructor(
+        protected readonly prismaService: PrismaService
+    ) { }
+
     async read(param: PuzzleDetailParam): Promise<PuzzleDetailPresenter> {
         const { gameOfEventId } = param;
         const res = await this.prismaService.puzzleGame.findUnique({
@@ -16,6 +22,9 @@ export default class PuzzleDetailReader extends PrismaReaderBase implements IRea
                 Prize: true,
             }
         });
+        if (!res) {
+            throw new DomainError('Puzzle Game not found');
+        }
         const presenter: PuzzleDetailPresenter = {
             gameOfEventId: res.gameOfEventId,
             sizeX: res.sizeX,

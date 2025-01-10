@@ -3,7 +3,9 @@ import TradePuzzleParam from "./trade-puzzle.param";
 import { IUnitOfWork } from "src/domain/common/unit-of-work.i";
 import { DomainError } from "src/common/error/domain.error";
 import { PuzzleAmountValueObject } from "src/domain/common/vo/puzzle-amount.vo";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class TradePuzzleCommand implements ICommand<TradePuzzleParam> {
     constructor(
         private readonly unitOfWork: IUnitOfWork

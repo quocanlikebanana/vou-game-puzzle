@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post } from "@nestjs/common";
+import { Body, Controller, Get, Param, Post } from "@nestjs/common";
 import ExchangePuzzleCommand from "src/commands/user/exchange-puzzle/exchange-puzzle.command";
 import ExchangePuzzleParam from "src/commands/user/exchange-puzzle/exchange-puzzle.param";
 import JoinPuzzleCommand from "src/commands/user/join-puzzle/join-puzzle.command";
@@ -49,23 +49,23 @@ export default class UserPuzzleController {
         return await this.tradePuzzleCommand.execute(tradePuzzleParam);
     }
 
-    @Get('exchange-history')
-    async exchangeHistory(@Body() exchangeHistoryParam: ExchangeHistoryParam) {
+    @Get('exchange-history/:userId/:gameOfEventId')
+    async exchangeHistory(@Param() exchangeHistoryParam: ExchangeHistoryParam) {
         return await this.exchangeHistoryReader.read(exchangeHistoryParam);
     }
 
-    @Get('get-user-puzzles')
-    async getUserPuzzles(@Body() getUserPuzzlesParam: GetUserPuzzlesParam) {
+    @Get('get-user-puzzles/:userId/:gameOfEventId')
+    async getUserPuzzles(@Param() getUserPuzzlesParam: GetUserPuzzlesParam) {
         return await this.getUserPuzzlesReader.read(getUserPuzzlesParam);
     }
 
-    @Get('roll-history')
-    async rollHistory(@Body() rollHistoryParam: RollHistoryParam) {
+    @Get('roll-history/:userId/:gameOfEventId')
+    async rollHistory(@Param() rollHistoryParam: RollHistoryParam) {
         return await this.rollHistoryReader.read(rollHistoryParam);
     }
 
-    @Get('trade-history')
-    async tradeHistory(@Body() tradeHistoryParam: TradeHistoryParam) {
+    @Get('trade-history/:userId/:gameOfEventId')
+    async tradeHistory(@Param() tradeHistoryParam: TradeHistoryParam) {
         return await this.tradeHistoryReader.read(tradeHistoryParam);
     }
 }

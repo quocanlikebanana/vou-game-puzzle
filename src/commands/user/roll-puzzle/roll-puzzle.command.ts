@@ -3,7 +3,9 @@ import RollPuzzleParam from "./roll-puzzle.param";
 import { IUnitOfWork } from "src/domain/common/unit-of-work.i";
 import { PuzzleAmountValueObject } from "src/domain/common/vo/puzzle-amount.vo";
 import { DomainError } from "src/common/error/domain.error";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class RollPuzzleCommand implements ICommand<RollPuzzleParam> {
     constructor(
         private readonly unitOfWork: IUnitOfWork,

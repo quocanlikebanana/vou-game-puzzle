@@ -19,7 +19,7 @@ async function bootstrap() {
 		exceptionFactory: validationExceptionFactory,
 	}));
 
-	await app.listen(port, host);
+	await app.listen(port);
 	console.log(`[PuzzleGame Service] is running on: ${await app.getUrl()}`);
 }
 bootstrap();

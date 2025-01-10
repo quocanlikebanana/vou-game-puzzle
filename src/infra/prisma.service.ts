@@ -22,6 +22,11 @@ export class PrismaService extends PrismaClient implements OnModuleInit, OnModul
                     level: 'warn',
                 },
             ],
+            datasources: {
+                db: {
+                    url: process.env.DATABASE_URL,
+                },
+            },
         });
     }
 

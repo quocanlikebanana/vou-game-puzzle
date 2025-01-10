@@ -3,7 +3,9 @@ import { PuzzleGameCreateDto } from "src/domain/common/dto/puzzle-game-create.dt
 import { IUnitOfWork } from "src/domain/common/unit-of-work.i";
 import CreatePuzzleParam from "./create-puzzle.param";
 import { PuzzleGameAggregate } from "src/domain/puzzle/puzzle-game.agg";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class CreatePuzzleCommand implements ICommand<CreatePuzzleParam> {
     constructor(
         private readonly unitOfWork: IUnitOfWork

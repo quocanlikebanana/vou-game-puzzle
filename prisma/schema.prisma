@@ -31,7 +31,7 @@ model Puzzle {
   order         Int
   rate          Int
 
-  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId], onDelete: Cascade)
 
   User_Has_Puzzle   User_Has_Puzzle[]
   User_Roll_Puzzle  User_Roll_Puzzle[]
@@ -46,7 +46,7 @@ model Prize {
   gameOfEventId String
   amount        Int
 
-  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+  gameOfEvent PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId], onDelete: Cascade)
 }
 
 model UserPuzzle {
@@ -54,7 +54,7 @@ model UserPuzzle {
   userId        String
   gameOfEventId String
 
-  PuzzleGame PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId])
+  PuzzleGame PuzzleGame @relation(fields: [gameOfEventId], references: [gameOfEventId], onDelete: Cascade)
 
   User_Has_Puzzle     User_Has_Puzzle[]
   User_Roll_Puzzle    User_Roll_Puzzle[]

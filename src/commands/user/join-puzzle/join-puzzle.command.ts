@@ -3,7 +3,9 @@ import { IUnitOfWork } from "src/domain/common/unit-of-work.i";
 import JoinPuzzleParam from "./join-puzzle.param";
 import { UserPuzzleAggregate } from "src/domain/user/user-puzzle.agg";
 import { DomainError } from "src/common/error/domain.error";
+import { Injectable } from "@nestjs/common";
 
+@Injectable()
 export default class JoinPuzzleCommand implements ICommand<JoinPuzzleParam> {
     constructor(
         private readonly unitOfWork: IUnitOfWork
