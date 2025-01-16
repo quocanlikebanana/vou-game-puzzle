@@ -16,7 +16,7 @@ import RollHistoryReader from "src/readers/user/roll-history/roll-history.reader
 import TradeHistoryParam from "src/readers/user/trade-history/trade-history.param";
 import TradeHistoryReader from "src/readers/user/trade-history/trade-history.reader";
 
-@Controller('user-puzzle')
+@Controller('user')
 export default class UserPuzzleController {
     constructor(
         private readonly exchangePuzzleCommand: ExchangePuzzleCommand,

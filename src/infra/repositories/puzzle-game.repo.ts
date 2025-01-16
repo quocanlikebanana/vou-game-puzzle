@@ -4,6 +4,7 @@ import { PrismaRepositoryBase } from "./prisma.repo.base";
 import { PuzzleRateValueObject } from "src/domain/common/vo/puzzle-rate.vo";
 import { PrizeValueObject } from "src/domain/common/vo/prize.vo";
 import { PuzzleAmountValueObject } from "src/domain/common/vo/puzzle-amount.vo";
+import { DomainError } from "src/common/error/domain.error";
 
 export class PuzzleGameRepository extends PrismaRepositoryBase implements IPuzzleGameRepository {
     async getById(gameOfEventId: string): Promise<PuzzleGameAggregate> {
@@ -14,6 +15,9 @@ export class PuzzleGameRepository extends PrismaRepositoryBase implements IPuzzl
                 Puzzle: true
             }
         });
+        if (!res) {
+            throw new DomainError('Puzzle game not found');
+        }
         const puzzleGameAggregate = new PuzzleGameAggregate({
             ...res,
             puzzles: res.Puzzle.map(puzzle => new PuzzleRateValueObject({

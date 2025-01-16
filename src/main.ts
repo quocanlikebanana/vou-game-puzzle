@@ -19,6 +19,8 @@ async function bootstrap() {
 		exceptionFactory: validationExceptionFactory,
 	}));
 
+	app.enableCors({ origin: '*' });
+
 	await app.listen(port);
 	console.log(`[PuzzleGame Service] is running on: ${await app.getUrl()}`);
 }

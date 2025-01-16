@@ -14,17 +14,17 @@ export default class PuzzleGameController {
         private readonly puzzleDetailReader: PuzzleDetailReader
     ) { }
 
-    @Post('create')
+    @Post('/partner/create')
     async createPuzzle(@Body() createPuzzleParam: CreatePuzzleParam): Promise<void> {
         return await this.createPuzzleCommand.execute(createPuzzleParam);
     }
 
-    @Post('delete')
+    @Post('/partner/delete')
     async deletePuzzle(@Body() deletePuzzleParam: DeletePuzzleParam): Promise<void> {
         return await this.deletePuzzleCommand.execute(deletePuzzleParam);
     }
 
-    @Get('detail/:gameOfEventId')
+    @Get('/unauth/detail/:gameOfEventId')
     async getPuzzleDetails(@Param() puzzleDetailParam: PuzzleDetailParam): Promise<any> {
         return await this.puzzleDetailReader.read(puzzleDetailParam);
     }

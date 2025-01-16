@@ -14,6 +14,8 @@ import ExchangeHistoryReader from './readers/user/exchange-history/exchange-hist
 import GetUserPuzzlesReader from './readers/user/get-user-puzzles/get-user-puzzles.reader';
 import RollHistoryReader from './readers/user/roll-history/roll-history.reader';
 import TradeHistoryReader from './readers/user/trade-history/trade-history.reader';
+import { HttpModule } from '@nestjs/axios';
+import { StatsModule } from './stats/stats.module';
 
 @Module({
   imports: [
@@ -21,6 +23,8 @@ import TradeHistoryReader from './readers/user/trade-history/trade-history.reade
       isGlobal: true,
     }),
     InfraModule,
+    HttpModule,
+    StatsModule,
   ],
   providers: [
     CreatePuzzleCommand,
